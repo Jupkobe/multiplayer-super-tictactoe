@@ -17,12 +17,7 @@ const cors = require("cors");
 const PORT = 3000; 
 
 
-const io = new Server(server, {
-    cors: {
-        origin: "https://super-tictactoe-frontend.onrender.com/",
-        methods: ["GET", "POST"],
-    }
-});
+const io = new Server(server);
 
 server.listen(PORT, () => {
     console.log("SERVER IS UP")
