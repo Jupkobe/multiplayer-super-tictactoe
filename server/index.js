@@ -1,27 +1,32 @@
 const express = require("express");
 const http = require("http");
+const cors = require("cors");
 const { Server } = require("socket.io");
 const {generateEmptyBoardArray, generateBoardIdArray} = require("./modules/resetFuncs");
 const {checkHorizontal, checkVertical, checkDiagonal, checkDraw} = require("./modules/checkFuncs");
 
-//TODO 3+ oyuncu bağlanınca ne olacak
-// x's turn değişmiyor
-// reset
-
-
 const app = express();
 const server = http.createServer(app);
-
-const cors = require("cors");
-
-const PORT = 3000; 
-
-
 const io = new Server(server);
+
+const PORT = process.env.PORT || 3000;
+
+const corsOptions = {
+  origin: 'https://super-tictactoe-frontend.onrender.com/',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 server.listen(PORT, () => {
     console.log("SERVER IS UP")
 });
+
+//TODO 3+ oyuncu bağlanınca ne olacak
+// x's turn değişmiyor
+// reset
 
 const games = {}
 
@@ -108,17 +113,3 @@ function prepareNextPlay(room, lastPlayer, lastPlay) {
 
     games[room].turn === "X" ? games[room].turn = "O" : games[room].turn = "X";
 }
-
-// onPlay Loop
-// useEffect(() => {
-//     const winnerArray = mainGame.map(item => item.winner);
-//     if (isOver(winnerArray)) {
-//       gameOver();
-//     }
-//     else {
-//       if (lastPlay) {
-//         calcNextPlay();
-//         changePlayer();      
-//       }
-//     }        
-//   }, [lastPlay]);
