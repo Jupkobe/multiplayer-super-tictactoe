@@ -1,13 +1,19 @@
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
-const { Server } = require("socket.io");
+// const { Server } = require("socket.io");
 const {generateEmptyBoardArray, generateBoardIdArray} = require("./modules/resetFuncs");
 const {checkHorizontal, checkVertical, checkDiagonal, checkDraw} = require("./modules/checkFuncs");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+// const io = new Server(server);
+const io = require('socket.io')(httpServer, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 
