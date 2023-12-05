@@ -1,7 +1,8 @@
 {
-  "name": "superxox",
-  "private": true,
-  "version": "0.0.0",
+  "name": "mp-superxox",
+  "version": "1.0.0",
+  "author": "Jupkobe",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,8 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@preact/signals-react": "^1.3.6",
-    "nanoid": "^5.0.3",
     "react": "^18.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "^18.2.0",

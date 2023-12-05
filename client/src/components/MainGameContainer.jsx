@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { checkDiagonal, checkVertical, checkHorizontal } from "./checkFuncs";
-import { generateBoardIdArray, generateEmptyBoardArray} from './resetFuncs';
+import { generateEmptyBoardArray } from './resetFuncs';
 import GameBoard from './GameBoard';
-import Confetti from './Confetti';
 import { socket } from "../socket";
 
 // {
-//   id: i,
+//   boardId: i,
 //   winner: null,
 //   game: [null, null, null, null, null, null, null, null, null]
 //  [O, D, X,
@@ -14,43 +12,56 @@ import { socket } from "../socket";
 //   X, D, D]
 // }
 
-export default function MainGameContainer({ room }) {
+export default function MainGameContainer({ roomId, username }) {
   const [mainGame, setMainGame] = useState(() => generateEmptyBoardArray());
   const [nextPlayArray, setNextPlayArray] = useState([]);
-  const [lastPlay, setLastPlay] = useState(null);
-  const [winner, setWinner] = useState(null);
-  const modal = useRef(null);
-  const playerRef = useRef("");     // For socket.io useEffect
-  const player = playerRef.current; // For other purposes
-
+  const [lastPlay, setLastPlay] = useState([-1, -1]);
+  const [symbol, setSymbol] = useState("");
+  const [turn, setTurn] = useState(null);
+  
   useEffect(() => {
-    socket.on("joined_room", serverPlayer => {
-      playerRef.current = serverPlayer;
+    socket.on("joined-room", ({ symbol }) => {
+      setSymbol(symbol);
+      setMainGame(generateEmptyBoardArray());
     });
-
-    socket.on("sync", ({boardId, result}) => {
+    
+    socket.on("sync", ({ boardId, result, lastPlay }) => {
       setMainGame(prevMainGame => (prevMainGame.map(item => (
-        item.id === boardId ? item = result : item
-        )))
-      );
-    })
-
-    socket.on("next_turn", ({ nextPlayer, nextPlayFromServer }) => {
-      if (playerRef.current === nextPlayer) setNextPlayArray(nextPlayFromServer);
+          item.boardId === boardId ? item = result : item
+      ))));
+      setLastPlay(lastPlay);
     });
 
-    socket.on("game_over", winner => {
-      setWinner(winner);
-      openModal();
-    })
+    socket.on("next-turn", ({ turn, nextPlayFromServer }) => {
+      setTurn(turn);
+      
+      if (username === turn.username) {
+        setNextPlayArray(nextPlayFromServer);
+      }
+    });
 
-  }, [socket]);
+    socket.on("reset", () => {
+      setMainGame(generateEmptyBoardArray());
+      setNextPlayArray([]);
+      setLastPlay([-1, -1]);
+      symbol === "X" ? setSymbol("O") : setSymbol("X");
+      setTurn(null);
+    });
+
+    () => {
+      socket.off("sync");
+      socket.off("joined-room");
+      socket.off("next-turn");
+      socket.off("reset");
+      socket.disconnect();
+    }
+  }, [socket, username, roomId, symbol]);
   
   
   function onPlay(boardId, boxId, result) {
     socket.emit("play", {
-      cliRoom: room, 
-      cliPlayer: player, 
+      cliRoomId: roomId, 
+      cliPlayer: symbol, 
       cliBoardId: boardId, 
       cliBoxId: boxId, 
       cliResult: result
@@ -58,63 +69,33 @@ export default function MainGameContainer({ room }) {
     
     setNextPlayArray([]);
   };
-
-  // function resetGame() {    
-  //   setMainGame(generateEmptyBoardArray());
-  //   setLastPlay(null);
-  //   setPlayer("X");
-  //   setWinner(null);
-  //   closeModal();
-  // };
-
-  // function gameOver() {
-  //   setNextPlayArray([]);
-  //   openModal();
-  // };
-
-  function openModal() {
-    modal.current.showModal();
-  };
-
-  function closeModal() {
-    modal.current.close();
-  };
   
   const gameBoardElems = mainGame.map(item => {
     return (
     <GameBoard 
-      key={item.id}
-      id={item.id}
+      key={item.boardId}
+      boardId={item.boardId}
       game={item.game}
       winner={item.winner}
-      player={player}
-      isPlayable={nextPlayArray.includes(item.id)}
+      symbol={symbol}
+      isPlayable={nextPlayArray.includes(item.boardId)}
       onPlay={onPlay}
+      lastPlay={lastPlay[0] === item.boardId ? lastPlay[1] : -1}
     />)
   });
   
   return (
     <>
-      {winner && <Confetti />}
       <main className='flex flex-col items-center justify-center w-full min-h-screen p-3'>
-        {/* <div className='flex flex-col items-center mb-4'>
-          <h2 className='text-5xl font-bold text-[#0b0d40]'>{player && `${player}'s Turn`}</h2>
-        </div> */}
+        <div className='flex flex-col items-center mb-4'>
+          <h2 className='text-5xl font-bold text-[#0b0d40]'>{turn && `(${turn.symbol}) ${turn.username}'s Turn`}</h2>
+        </div>
         <section className='w-full sm:w-[37.75rem] sm:h-[37.75rem] p-1 sm:p-3 sm:justify-center sm:items-center bg-[#5068AB] rounded-md'>
           <div className='grid grid-cols-3 gap-1 sm:gap-2 aspect-square'>
             {gameBoardElems}
           </div>
         </section>
       </main>
-      <dialog ref={modal}>
-        <div className="flex flex-col items-center justify-center p-4 border border-black rounded w-80">
-          <div className="w-full leading-6 text-[#0b0d40]">
-            <h3 className="text-5xl font-bold text-center">{winner === "DRAW" ? "DRAW" : `${winner} wins!`}</h3>
-            {winner === "DRAW" && <p className='mt-2 text-center'>You did it! You managed to break the game... almost.</p>}
-          </div>
-          <button onClick={() => {console.log("reset game pls")}} className="p-1 px-2 mt-6 border border-black">Reset</button>
-        </div>
-      </dialog>
     </>
   )
 }

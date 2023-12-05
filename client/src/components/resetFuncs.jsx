@@ -2,7 +2,7 @@ export function generateEmptyBoardArray() {
     const emptyBoard = [];
     for (let i = 0; i < 9; i++) {
       emptyBoard.push({
-        id: i,
+        boardId: i,
         winner: null,
         game: [null, null, null, null, null, null, null, null, null]
       });

@@ -1,7 +1,7 @@
 import { checkDiagonal, checkVertical, checkHorizontal, checkDraw } from "./checkFuncs";
 
 
-export default function GameBoard({ id, onPlay, player, game, winner, isPlayable }) {
+export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPlayable, lastPlay }) {
     const board = game;
     
     function handleClick(e, index) {
@@ -9,20 +9,20 @@ export default function GameBoard({ id, onPlay, player, game, winner, isPlayable
         if (!isPlayable) return;
         else if (board[index] !== null) return;
         
-        board[index] = player;
+        board[index] = symbol;
         
         const result = {
-            id,
+            boardId,
             winner: isOver(),
             game: board,
         }
     
-        onPlay(id, index, result);
+        onPlay(boardId, index, result);
     };
 
     function isOver() {        
         if (checkHorizontal(board) || checkVertical(board) || checkDiagonal(board)) {
-            return player;
+            return symbol;
         }
         else if (checkDraw(board)) {
             return "D";
@@ -37,7 +37,7 @@ export default function GameBoard({ id, onPlay, player, game, winner, isPlayable
             key={index}
             onClick={(e) => handleClick(e, index)}
             className={`flex items-center justify-center w-full text-2xl sm:text-3xl text-[#0b0d40] 
-            font-bold rounded-sm aspect-square animation ${isPlayable ? "bg-white" : "bg-gray-300"}`}
+            font-bold rounded-sm aspect-square animation ${isPlayable ? (lastPlay === index ? "bg-orange-200" : "bg-white") : (lastPlay === index ? "bg-orange-100" : "bg-gray-300")}`}
         >
             {value}
         </div>

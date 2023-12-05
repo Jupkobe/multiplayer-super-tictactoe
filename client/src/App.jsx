@@ -1,53 +1,52 @@
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import Dialog from './components/Dialog';
 import MainGameContainer from './components/MainGameContainer';
-import { useEffect, useState, useRef } from 'react';
-import {socket} from "./socket";
+import { useEffect, useState } from 'react';
+import { socket } from "./socket";
+import Confetti from './components/Confetti';
 
 export default function App() {
-  const [room, setRoom] = useState("");
-  const [isConnected, setIsConnected] = useState(false);
-  const roomModal = useRef(null);
-
+  const [roomId, setRoomId] = useState("");
+  const [username, setUsername] = useState("");
+  const [winner, setWinner] = useState(null);
+  
   useEffect(() => {
-    if (!isConnected) openModal();
-    
-    socket.on("joined_room", () => {
-      setIsConnected(true);
-      closeModal();
+    socket.on("joined-room", ({ roomId }) => {
+      setRoomId(roomId);
     });
+    
+    socket.on("game-over", winner => {
+      setWinner(winner);
+    });
+
+    socket.on("reset", () => {
+      setWinner(null);
+    });
+
+    () => {
+      socket.off("joined-room");
+      socket.off("game-over");
+      socket.off("reset");
+      socket.disconnect();
+    }
   }, [socket]);
-
-  function onClickJoin(e) {
-    e.preventDefault();
-
-    socket.emit("join_room", room);
-    console.log("Room name is: ", room);
-  }
-
-  function openModal() {
-    roomModal.current.showModal();
-  };
-
-  function closeModal() {
-    roomModal.current.close();
-  };
-
+  
   return (
   <>
-    <div className='w-full min-h-screen bg-image font-roboto'>
-      <dialog className='rounded backdrop:bg-black backdrop:opacity-60' ref={roomModal}>
-        <div className="flex flex-col items-center justify-center p-4 border border-black rounded w-80">
-          <form onSubmit={onClickJoin}>
-            <label htmlFor='roomName' className='text-lg'>Enter a room name:</label>
-            <input className='p-2 text-lg leading-none border border-black rounded-md' required pattern="[A-Za-z0-9]{1,20}" name='roomName' disabled={isConnected} placeholder='Room Name' onChange={(e) => setRoom(e.target.value)}/>
-            <button className="p-2 m-1 text-lg leading-none border border-black rounded-md" disabled={isConnected}>{isConnected ? "Connecting..." : "Join"}</button>
-          </form>
-        </div>
-      </dialog>
+    <div className='w-full min-h-screen bg-image font-montserrat'>
+      {winner && <Confetti />}
       <Navbar />
+      <Dialog
+        roomId={roomId}
+        setRoomId={setRoomId}
+        username={username}
+        setUsername={setUsername}
+        winner={winner}
+      />
       <MainGameContainer 
-        room={room}
+        roomId={roomId}
+        username={username}
       />
       <Footer />  
     </div>
