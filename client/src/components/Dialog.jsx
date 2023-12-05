@@ -9,6 +9,7 @@ export default function Dialog({ roomId, setRoomId, username, setUsername, winne
     roomId: "",
     username: "",
   });
+  const [resetRequested, setResetRequested] = useState(false);
   const [error, setError] = useState(null);
   const usernameModal = useRef(null);
   const newGameModal = useRef(null);
@@ -40,6 +41,10 @@ export default function Dialog({ roomId, setRoomId, username, setUsername, winne
 
     socket.on("game-over", () => {
       openModal(winnerModal);
+    });    
+    
+    socket.on("reset", () => {
+      setResetRequested(false);
     });
 
     // ERROR HANDLING
@@ -59,7 +64,8 @@ export default function Dialog({ roomId, setRoomId, username, setUsername, winne
 
   function onReset(e) {   
     e.preventDefault();
-     
+    
+    setResetRequested(true);
     socket.emit("reset-request", roomId, username);
   };  
   
@@ -185,7 +191,7 @@ export default function Dialog({ roomId, setRoomId, username, setUsername, winne
           <h3 className="text-5xl font-bold text-center">{winner === "DRAW" ? "DRAW!" : `${winner} wins!`}</h3>
           {winner === "DRAW" && <p className='mt-2 text-center'>You did it! You managed to break the game... almost.</p>}
         </div>
-        <button onClick={onReset} className="p-1 px-2 mt-6 dialog-button">Reset</button>
+        <button onClick={onReset} className="p-1 px-2 mt-6 dialog-button" disabled={resetRequested}>{resetRequested ? "Reset (1/2)" : "Reset (0/2)"}</button>
       </div>
     </dialog>
   );
