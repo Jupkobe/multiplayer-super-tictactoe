@@ -1,9 +1,9 @@
+import { useEffect, useState } from 'react';
+import { socket } from "./socket";
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dialog from './components/Dialog';
 import MainGameContainer from './components/MainGameContainer';
-import { useEffect, useState } from 'react';
-import { socket } from "./socket";
 import Confetti from './components/Confetti';
 
 export default function App() {
@@ -39,7 +39,6 @@ export default function App() {
       <Navbar />
       <Dialog
         roomId={roomId}
-        setRoomId={setRoomId}
         username={username}
         setUsername={setUsername}
         winner={winner}

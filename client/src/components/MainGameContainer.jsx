@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { socket } from "../socket";
 import { generateEmptyBoardArray } from './resetFuncs';
 import GameBoard from './GameBoard';
-import { socket } from "../socket";
 
 // {
 //   boardId: i,

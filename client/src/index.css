@@ -11,5 +11,5 @@
 }
 
 .dialog-button {
-    @apply border border-black rounded shadow-sm shadow-black hover:translate-y-[2px] hover:shadow-none
+    @apply border border-black rounded shadow-sm shadow-black hover:translate-y-[2px] hover:shadow-none disabled:translate-y-[2px] disabled:shadow-none
 }

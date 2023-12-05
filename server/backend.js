@@ -1,13 +1,11 @@
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
-// const { Server } = require("socket.io");
 const {generateEmptyBoardArray, generateBoardIdArray} = require("./modules/resetFuncs");
 const {checkHorizontal, checkVertical, checkDiagonal, checkDraw} = require("./modules/checkFuncs");
 
 const app = express();
 const server = http.createServer(app);
-// const io = new Server(server);
 const io = require('socket.io')(server, {
   cors: {
     origin: '*',
@@ -83,8 +81,49 @@ io.on("connection", (socket) => {
             console.log(`${username} joined ${roomId}`);
 
             socket.emit("joined-room", {symbol: player.symbol, roomId});
-            io.to(roomId).emit("game-ready");    
-            io.to(roomId).emit("next-turn", {turn: games[roomId].playerX, nextPlayFromServer: generateBoardIdArray()});
+
+            if (games[roomId].winner) {
+                socket.emit("game-over", games[roomId].winner);
+            } else {
+                io.to(roomId).emit("game-ready");    
+                io.to(roomId).emit("next-turn", {turn: games[roomId].playerX, nextPlayFromServer: generateBoardIdArray()});
+            }
+        }
+    });
+
+    socket.on("join-with-url", async (roomId, username) => {
+        const sockets = await io.in(roomId).fetchSockets();
+
+        if (sockets.length === 0) {            
+            socket.emit("error", "Room not found!");
+        }
+        else if (games[roomId].players.includes(username)) {
+            socket.emit("error", "Username already exists!");
+        }
+        else if (sockets.length === 2) {
+            socket.emit("error", "Room is full!");
+        }
+        else {
+            socket.join(roomId);
+            
+            const player = {id: socket.id, roomId, symbol: null, username};
+
+            if (games[roomId].playerX === null) setPlayerX(roomId, player); 
+            else setPlayerO(roomId, player);
+
+            players[socket.id] = player;
+            console.log(`${username} joined ${roomId}`);
+
+            socket.emit("joined-room", {symbol: player.symbol, roomId});
+            
+            if (games[roomId].winner) {
+                io.to(socket.id).emit("game-over", games[roomId].winner);
+                console.log("abs")
+            } else {
+                console.log("else")
+                io.to(roomId).emit("game-ready");    
+                io.to(roomId).emit("next-turn", {turn: games[roomId].playerX, nextPlayFromServer: generateBoardIdArray()});
+            }
         }
     });
 
@@ -95,9 +134,9 @@ io.on("connection", (socket) => {
         const roomId = player.roomId;
         const username = player.username;
         
-        const sockets = await io.in(player.roomId).fetchSockets();
+        const sockets = await io.in(roomId).fetchSockets();
 
-        if (player.roomId && (sockets.length > 0)) {
+        if (roomId && (sockets.length > 0)) {
             console.log(`${username} disconnected from ${roomId}`);
 
             if (!games[roomId].winner) {
@@ -106,6 +145,7 @@ io.on("connection", (socket) => {
                 if (games[roomId].playerX.id === socket.id) winner = games[roomId].playerO.username;
                 else winner = games[roomId].playerX.username;
         
+                games[roomId].winner = winner;
                 io.to(roomId).emit("game-over", winner);
                 console.log(`${winner} won in ${roomId}`);
             }
@@ -154,6 +194,7 @@ io.on("connection", (socket) => {
 
     socket.on("reset-request", (roomId, username) => {
         if (games[roomId].reset && socket.id !== games[roomId].reset) {
+            io.to(roomId).emit("reset-count", 2);
             const prevX = games[roomId].playerX;
             const prevO = games[roomId].playerO;
 
@@ -169,7 +210,8 @@ io.on("connection", (socket) => {
         else if (!games[roomId].reset) {
             games[roomId].reset = socket.id;
             
-            console.log(`${username} requested reset in ${roomId}`);
+            io.to(roomId).emit("reset-count", 1);
+            console.log(`${username} requested reset in ${roomId} (1/2)`);
         }
     })
 });
@@ -192,7 +234,6 @@ function setPlayerX(roomId, player) {
     player.symbol = "X";
     games[roomId].playerX = player;
     games[roomId].players.push(player.username);
-    //EMIT USER
 }
 
 function setPlayerO(roomId, player) {
