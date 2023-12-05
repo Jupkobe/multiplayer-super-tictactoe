@@ -17,6 +17,7 @@ export default function WinnerModal({ winner, roomId, username, isOpen }) {
 
     socket.on("reset", () => {
       setResetCount(0);
+      setClicked(false);
     });
 
     () => {
