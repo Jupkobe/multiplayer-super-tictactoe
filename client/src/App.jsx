@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { socket } from "./socket";
+import { useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dialog from './components/Dialog';
@@ -10,15 +11,16 @@ export default function App() {
   const [roomId, setRoomId] = useState("");
   const [username, setUsername] = useState("");
   const [winner, setWinner] = useState(null);
+  const navigateTo = useNavigate();
   
   useEffect(() => {
     socket.on("username-selected", (usernameFromServer) => {
-      console.log("username-selected", usernameFromServer);
       setUsername(usernameFromServer);
     });
 
     socket.on("joined-room", ({ roomId }) => {
       setRoomId(roomId);
+      navigateTo(`/?roomId=${roomId}`)
     });
     
     socket.on("game-over", winner => {

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react';
 
 export default function NewGameModal({ error, onClickJoin, isConnecting, onClickNewGame, isOpen }) {
   const [inputRoomId, setInputRoomId] = useState("");
@@ -29,15 +29,18 @@ export default function NewGameModal({ error, onClickJoin, isConnecting, onClick
         <p className='mt-2 text-lg'>or</p>
         <p className='mt-1 text-xl font-medium'>Create a room</p>
         <div className='grid w-full grid-cols-3 gap-5 px-8 py-2 sm:gap-4'>
-          <button onClick={() => {
-            onClickNewGame("X")
-          }} disabled={isConnecting} className='p-4 text-3xl font-semibold leading-none sm:text-5xl aspect-square dialog-button'>X</button>
-          <button onClick={() => {
-            onClickNewGame("?")
-          }} disabled={isConnecting} className='p-4 text-3xl font-semibold leading-none sm:text-5xl aspect-square dialog-button'>?</button>
-          <button onClick={() => {
-            onClickNewGame("O")
-          }} disabled={isConnecting} className='p-4 text-3xl font-semibold leading-none sm:text-5xl aspect-square dialog-button'>O</button>
+          <button 
+            onClick={() => {onClickNewGame("X")}} 
+            disabled={isConnecting} 
+            className='p-4 text-3xl font-semibold leading-none sm:text-5xl aspect-square dialog-button'>X</button>
+          <button 
+            onClick={() => {onClickNewGame("?")}} 
+            disabled={isConnecting} 
+            className='p-4 text-3xl font-semibold leading-none sm:text-5xl aspect-square dialog-button'>?</button>
+          <button 
+            onClick={() => {onClickNewGame("O")}} 
+            disabled={isConnecting} 
+            className='p-4 text-3xl font-semibold leading-none sm:text-5xl aspect-square dialog-button'>O</button>
         </div>
       </div>
     </dialog>

@@ -34,9 +34,6 @@ export default function MainGameContainer({ roomId, username }) {
 
     socket.on("next-turn", ({ turn, nextPlayFromServer }) => {
       setTurn(turn);
-      
-      console.log(turn);
-      console.log(username);
 
       if (username === turn.username) {
         setNextPlayArray(nextPlayFromServer);
