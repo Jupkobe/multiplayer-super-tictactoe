@@ -20,7 +20,7 @@ export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPla
         onPlay(boardId, index, result);
     };
 
-    function isOver() {        
+    function isOver() {
         if (checkHorizontal(board) || checkVertical(board) || checkDiagonal(board)) {
             return symbol;
         }
@@ -45,12 +45,12 @@ export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPla
 
     const blockElem = (
         <>
-            <span className="absolute flex items-center justify-center w-full leading-none text-[#0b0d40] aspect-square text-[12rem]">{winner}</span>
+            <span className="absolute flex items-center justify-center w-full leading-none text-[#0b0d40] aspect-square text-[7rem] sm:text-[14rem]">{winner}</span>
             <div className="absolute w-full bg-gray-800 rounded-md opacity-50 aspect-square"></div>
         </>)
 
     return (
-        <div className={`grid relative w-full grid-cols-3 gap-1 p-1 rounded-md aspect-square animation ${isPlayable ? "bg-[#131780]" : "bg-[#0b0d40]"}`}>
+        <div className={`grid relative w-full grid-cols-3 gap-[2px] sm:gap-1 p-1 rounded-md aspect-square animation ${isPlayable ? "bg-[#131780]" : "bg-[#0b0d40]"}`}>
             {winner ? blockElem : null}
             {buttonElems}
         </div>

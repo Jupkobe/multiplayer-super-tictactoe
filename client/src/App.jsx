@@ -12,6 +12,11 @@ export default function App() {
   const [winner, setWinner] = useState(null);
   
   useEffect(() => {
+    socket.on("username-selected", (usernameFromServer) => {
+      console.log("username-selected", usernameFromServer);
+      setUsername(usernameFromServer);
+    });
+
     socket.on("joined-room", ({ roomId }) => {
       setRoomId(roomId);
     });
@@ -25,6 +30,7 @@ export default function App() {
     });
 
     () => {
+      socket.off("username-selected");
       socket.off("joined-room");
       socket.off("game-over");
       socket.off("reset");
@@ -40,7 +46,6 @@ export default function App() {
       <Dialog
         roomId={roomId}
         username={username}
-        setUsername={setUsername}
         winner={winner}
       />
       <MainGameContainer 

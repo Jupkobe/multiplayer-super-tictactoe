@@ -35,6 +35,9 @@ export default function MainGameContainer({ roomId, username }) {
     socket.on("next-turn", ({ turn, nextPlayFromServer }) => {
       setTurn(turn);
       
+      console.log(turn);
+      console.log(username);
+
       if (username === turn.username) {
         setNextPlayArray(nextPlayFromServer);
       }
@@ -49,14 +52,13 @@ export default function MainGameContainer({ roomId, username }) {
     });
 
     () => {
-      socket.off("sync");
       socket.off("joined-room");
+      socket.off("sync");
       socket.off("next-turn");
       socket.off("reset");
       socket.disconnect();
     }
   }, [socket, username, roomId, symbol]);
-  
   
   function onPlay(boardId, boxId, result) {
     socket.emit("play", {

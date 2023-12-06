@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export default function UsernameModal({ onUsernameSelect, isConnecting, isOpen }) {
+export default function UsernameModal({ onUsernameSelect, isConnecting, error, isOpen }) {
   const [inputUsername, setInputUsername] = useState("");
   const modal = useRef(null);
 
@@ -11,7 +11,8 @@ export default function UsernameModal({ onUsernameSelect, isConnecting, isOpen }
   return (
     <dialog onKeyDown={(e) => {if (e.key === 'Escape') e.preventDefault()}} className='rounded backdrop:bg-black backdrop:opacity-60' ref={modal}>
       <div className="flex flex-col items-center justify-center px-2 py-4 border border-black rounded">
-        <p className='mb-2 text-lg font-medium'>Enter a username</p>
+        <p className='mb-1 text-lg font-medium'>Enter a username</p>
+        {error && <p className='mb-2 text-red-500'>{error}</p>}
         <form className='flex gap-2' onSubmit={(e) => {
             e.preventDefault();
             onUsernameSelect(inputUsername);

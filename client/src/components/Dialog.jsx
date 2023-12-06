@@ -12,7 +12,7 @@ function useQuery() {
   return useMemo(() => new URLSearchParams(search), [search]);
 }
 
-export default function Dialog({ roomId, username, setUsername, winner }) {
+export default function Dialog({ roomId, username, winner }) {
   const [showUsernameModal, setShowUsernameModal] = useState(true);
   const [showNewGameModal, setShowNewGameModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -27,11 +27,24 @@ export default function Dialog({ roomId, username, setUsername, winner }) {
       setShowInviteModal(false);
       setShowNewGameModal(false);
       setShowWinnerModal(false);
-    })
+    });
+
+    socket.on("username-selected", () => {
+      setShowUsernameModal(false);
+      setIsConnecting(false);
+
+      if (query.get("roomId")) {
+        socket.emit("join-room", query.get("roomId"));
+      }
+      setShowNewGameModal(true);
+    });
+
+    socket.on("joined-room", () => {
+      setIsConnecting(false);
+    });
 
     socket.on("invite-friend", () => {
       setShowNewGameModal(false);
-      setIsConnecting(false);
       setShowInviteModal(true);
     });
 
@@ -58,6 +71,7 @@ export default function Dialog({ roomId, username, setUsername, winner }) {
 
     () => {
       socket.off("welcome");
+      socket.off("joined-room");
       socket.off("invite-friend");
       socket.off("game-ready");
       socket.off("game-over");
@@ -67,21 +81,18 @@ export default function Dialog({ roomId, username, setUsername, winner }) {
   }, [socket]);
   
   function onUsernameSelect(inputUsername) {
-    setUsername(inputUsername);
-    
-    if (query.get("roomId")?.length === 5) socket.emit("join-with-url", query.get("roomId"), inputUsername);
-    setShowUsernameModal(false);
-    setShowNewGameModal(true);
+    socket.emit("username-selection", inputUsername);
+    setIsConnecting(true);
   }
 
-  function onClickJoin(inputRoomId) {    
+  function onClickJoin(inputRoomId) {
     setIsConnecting(true);
-    socket.emit("join-room", inputRoomId, username);
+    socket.emit("join-room", inputRoomId);
   }
 
   function onClickNewGame(selection) {
     setIsConnecting(true);
-    socket.emit("create-room", selection, username);
+    socket.emit("create-room", selection);
   }
 
   function showAlert(errorMsg) {
@@ -95,6 +106,7 @@ export default function Dialog({ roomId, username, setUsername, winner }) {
     <>
       <UsernameModal 
         onUsernameSelect={onUsernameSelect}
+        error={error}
         isConnecting={isConnecting}
         isOpen={showUsernameModal}
       />

@@ -24,7 +24,7 @@ export default function InviteModal({ roomId, isOpen }) {
     <div className="flex flex-col items-center justify-center w-full px-2 py-4 border border-black rounded sm:w-80">
       <p className='mb-2 text-lg font-medium'>Share this link!</p>
       <form className='flex gap-2'>
-        <input onClick={copyToClipboard} value={`https://sxox.onrender.com/?roomId=${roomId}`} readOnly className='p-1 px-2 text-lg leading-none text-center border border-black rounded-md shadow-sm outline-none hover:cursor-pointer sm:w-52 shadow-black'/>
+        <input onClick={copyToClipboard} value={`${window.location.href}?roomId=${roomId}`} readOnly className='p-1 px-2 text-lg leading-none text-center border border-black rounded-md shadow-sm outline-none hover:cursor-pointer sm:w-52 shadow-black'/>
       </form>
       <p className='mt-2 text-lg'>or</p>
       <p className='mb-2 text-lg font-medium'>Share this ID!</p>
