@@ -45,7 +45,7 @@ export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPla
 
     const blockElem = (
         <>
-            <span className="absolute flex items-center justify-center w-full leading-none text-[#0b0d40] aspect-square text-[7rem] sm:text-[14rem]">{winner}</span>
+            <span className="absolute flex items-center justify-center w-full leading-none text-[#0b0d40] aspect-square text-[7rem] sm:text-[12rem]">{winner}</span>
             <div className="absolute w-full bg-gray-800 rounded-md opacity-50 aspect-square"></div>
         </>)
 
