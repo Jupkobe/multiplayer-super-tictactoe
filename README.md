@@ -4,13 +4,6 @@ Super TicTacToe is an enhanced version of the classic TicTacToe game, offering a
 
 ![gameplay](https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/52594aef-1f1f-4412-bbde-fcabd1f3f920)
 
-## Features
-- Create a room with selected symbol
-- Joining a room with URL or room ID
-- Multiple room capability
-- Invite URL generation
-
-
 ## How to Play
 ### To try online
 Go to [sxox.onrender.com](https://sxox.onrender.com). Wait couple of seconds for server to start. Then invite a friend and enjoy!
