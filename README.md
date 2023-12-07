@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/ba8d09af-4dfb-44d2-a653-0d665245a6f5" alt="Logo">
+  <img width="200" src="https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/ba8d09af-4dfb-44d2-a653-0d665245a6f5" alt="Logo">
 </p>
 # Super Tic-Tac-Toe
 
