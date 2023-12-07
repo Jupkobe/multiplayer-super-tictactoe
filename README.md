@@ -1,13 +1,12 @@
-![super-tictactoe-logo](https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/ae4c0559-f318-44c6-89ba-1ceaf6a46a25)
-# Super Tic-Tac-Toe
 
+# Super Tic-Tac-Toe
 Super TicTacToe is an enhanced version of the classic TicTacToe game, offering a more challenging and strategic gameplay experience. This game is designed to be played by two players on a grid of 3x3 boards, adding an extra layer of complexity and excitement to the traditional TicTacToe.
 
 ![gameplay](https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/52594aef-1f1f-4412-bbde-fcabd1f3f920)
 
 ## Features
-- Create a room with custom symbol
-- Joining a room with custom URL or room ID
+- Create a room with selected symbol
+- Joining a room with URL or room ID
 - Multiple room capability
 - Invite URL generation
 
