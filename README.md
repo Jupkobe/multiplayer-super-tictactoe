@@ -1,6 +1,7 @@
 <p align="center">
   <img width="300" src="https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/ba8d09af-4dfb-44d2-a653-0d665245a6f5" alt="Logo">
 </p>
+
 # Super Tic-Tac-Toe
 
 Super TicTacToe is an enhanced version of the classic TicTacToe game, offering a more challenging and strategic gameplay experience. This game is designed to be played by two players on a grid of 3x3 boards, adding an extra layer of complexity and excitement to the traditional TicTacToe.
