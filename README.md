@@ -8,6 +8,9 @@ Super TicTacToe is an enhanced version of the classic TicTacToe game, offering a
 
 ![gameplay](https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/52594aef-1f1f-4412-bbde-fcabd1f3f920)
 
+![Editor 15](https://github.com/Jupkobe/multiplayer-super-tictactoe/assets/84783072/9a69c64b-8542-4e0f-bbac-7e1f10246aa0)
+
+
 ## How to Play
 ### To try online
 Go to [sxox.onrender.com](https://sxox.onrender.com). Wait couple of seconds for server to start. Then invite a friend and enjoy!
