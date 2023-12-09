@@ -120,6 +120,9 @@ io.on("connection", (socket) => {
                 io.to(roomId).emit("game-over", winner);
                 console.log(`${winner} won in ${roomId}`);
             }
+
+            if (games[roomId].playerX.id === socket.id) games[roomId].playerX = null;
+            else games[roomId].playerO = null; 
         }
         else if (sockets.length === 0) {
             delete games[roomId];

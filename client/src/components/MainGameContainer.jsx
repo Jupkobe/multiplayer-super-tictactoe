@@ -18,7 +18,7 @@ export default function MainGameContainer({ roomId, username, focused }) {
   const [lastPlay, setLastPlay] = useState([-1, -1]);
   const [symbol, setSymbol] = useState("");
   const [turn, setTurn] = useState(null);
-  let opponentPlayedAudio = new Audio("/src/audio/opponent-played.mp3");
+  let playedAudio = new Audio("/audios/opponent-played.mp3");
   
   useEffect(() => {
     socket.on("joined-room", ({ symbol }) => {
@@ -37,7 +37,7 @@ export default function MainGameContainer({ roomId, username, focused }) {
       setTurn(turn);
 
       if (username === turn.username) {
-        if (!focused) opponentPlayedAudio.play();
+        if (!focused) playedAudio.play();
         
         setNextPlayArray(nextPlayFromServer);
       }
@@ -58,7 +58,7 @@ export default function MainGameContainer({ roomId, username, focused }) {
       socket.off("reset");
       socket.disconnect();
     }
-  }, [socket, username, roomId, symbol]);
+  }, [socket, username, roomId, symbol, focused]);
   
   function onPlay(boardId, boxId, result) {
     socket.emit("play", {
