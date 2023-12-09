@@ -1,8 +1,8 @@
 const http = require("http");
 const express = require("express");
-const cors = require("cors");
 const {generateEmptyBoardArray, generateBoardIdArray} = require("./modules/resetFuncs");
 const {checkHorizontal, checkVertical, checkDiagonal, checkDraw} = require("./modules/checkFuncs");
+const { log } = require("console");
 
 const app = express();
 const server = http.createServer(app);
@@ -10,12 +10,14 @@ const io = require('socket.io')(server, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST']
-  }
+  }, 
+//   connectionStateRecovery: {
+//     maxDisconnectionDuration: 5000,
+//     skipMiddlewares: true,
+//   }
 });
 
 const PORT = process.env.PORT || 3000;
-
-// app.use(cors());
 
 server.listen(PORT, () => {
     console.log("SERVER IS UP")
@@ -27,15 +29,13 @@ const games = {}
 const players = {}
 
 io.on("connection", (socket) => {
-    console.log(`${socket.id} joined the server`);
-    socket.emit("welcome");
-
     socket.on("username-selection", (username) => {
         const usernameList = Object.values(players).map(item => item.username);
 
         if (usernameList.includes(username)) {
             socket.emit("error", "Username already exists!");
         } else {
+            socket.username = username;
             players[socket.id] = {id: socket.id, roomId: null, symbol: null, username};
             socket.emit("username-selected", username);
         }
@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
         }
         console.log(`${player.username} joined ${roomId}`);
 
-        socket.emit("joined-room", {symbol: player.symbol, roomId});
+        socket.emit("joined-room", {roomId});
         socket.emit("invite-friend");
     });
 
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
 
             console.log(`${player.username} joined ${roomId}`);
 
-            socket.emit("joined-room", {symbol: player.symbol, roomId});
+            socket.emit("joined-room", {roomId});
 
             if (games[roomId].winner) {
                 socket.emit("game-over", games[roomId].winner);
@@ -210,11 +210,13 @@ function createRoom(roomId) {
 
 function setPlayerX(roomId, player) {
     player.symbol = "X";
+    io.to(player.id).emit("set-symbol", "X");
     games[roomId].playerX = player;
 }
 
 function setPlayerO(roomId, player) {
     player.symbol = "O";
+    io.to(player.id).emit("set-symbol", "O");
     games[roomId].playerO = player;
 }
 

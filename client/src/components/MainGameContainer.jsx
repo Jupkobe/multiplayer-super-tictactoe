@@ -12,17 +12,18 @@ import GameBoard from './GameBoard';
 //   X, D, D]
 // }
 
-export default function MainGameContainer({ roomId, username, focused }) {
+export default function MainGameContainer() {
   const [mainGame, setMainGame] = useState(() => generateEmptyBoardArray());
   const [nextPlayArray, setNextPlayArray] = useState([]);
   const [lastPlay, setLastPlay] = useState([-1, -1]);
-  const [symbol, setSymbol] = useState("");
   const [turn, setTurn] = useState(null);
   let playedAudio = new Audio("/audios/opponent-played.mp3");
   
+
+  console.log("Render")
+
   useEffect(() => {
-    socket.on("joined-room", ({ symbol }) => {
-      setSymbol(symbol);
+    socket.on("joined-room", () => {
       setMainGame(generateEmptyBoardArray());
     });
     
@@ -36,18 +37,22 @@ export default function MainGameContainer({ roomId, username, focused }) {
     socket.on("next-turn", ({ turn, nextPlayFromServer }) => {
       setTurn(turn);
 
-      if (username === turn.username) {
-        if (!focused) playedAudio.play();
+      if (socket.username === turn.username) {
+        playedAudio.play();
+        console.log("Played")
         
         setNextPlayArray(nextPlayFromServer);
       }
+    });
+
+    socket.on("set-symbol", (symbol) => {
+      socket.symbol = symbol;
     });
 
     socket.on("reset", () => {
       setMainGame(generateEmptyBoardArray());
       setNextPlayArray([]);
       setLastPlay([-1, -1]);
-      symbol === "X" ? setSymbol("O") : setSymbol("X");
       setTurn(null);
     });
 
@@ -55,15 +60,16 @@ export default function MainGameContainer({ roomId, username, focused }) {
       socket.off("joined-room");
       socket.off("sync");
       socket.off("next-turn");
+      socket.off("set-symbol");
       socket.off("reset");
       socket.disconnect();
     }
-  }, [socket, username, roomId, symbol, focused]);
+  }, [socket]);
   
   function onPlay(boardId, boxId, result) {
     socket.emit("play", {
-      cliRoomId: roomId, 
-      cliPlayer: symbol, 
+      cliRoomId: socket.roomId, 
+      cliPlayer: socket.symbol, 
       cliBoardId: boardId, 
       cliBoxId: boxId, 
       cliResult: result
@@ -79,7 +85,6 @@ export default function MainGameContainer({ roomId, username, focused }) {
       boardId={item.boardId}
       game={item.game}
       winner={item.winner}
-      symbol={symbol}
       isPlayable={nextPlayArray.includes(item.boardId)}
       onPlay={onPlay}
       lastPlay={lastPlay[0] === item.boardId ? lastPlay[1] : -1}
@@ -97,6 +102,9 @@ export default function MainGameContainer({ roomId, username, focused }) {
             {gameBoardElems}
           </div>
         </section>
+        <button onClick={() => {
+          socket.connect();
+        }} className='w-40'>DENEME</button>
       </main>
     </>
   )

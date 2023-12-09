@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { socket } from "../socket";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import UsernameModal from './modals/UsernameModal';
 import NewGameModal from './modals/NewGameModal';
 import WinnerModal from './modals/WinnerModal';
@@ -12,13 +12,14 @@ function useQuery() {
   return useMemo(() => new URLSearchParams(search), [search]);
 }
 
-export default function Dialog({ roomId, username, winner }) {
+export default function Dialog({ winner }) {
   const [showUsernameModal, setShowUsernameModal] = useState(true);
   const [showNewGameModal, setShowNewGameModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState(null);
+  const navigateTo = useNavigate();
   let query = useQuery();
 
   useEffect(() => {
@@ -29,17 +30,20 @@ export default function Dialog({ roomId, username, winner }) {
       setShowWinnerModal(false);
     });
 
-    socket.on("username-selected", () => {
+    socket.on("username-selected", (usernameFromServer) => {
+      socket.username = usernameFromServer;
       setShowUsernameModal(false);
       setIsConnecting(false);
 
       if (query.get("roomId")) {
         socket.emit("join-room", query.get("roomId"));
+        navigateTo("/");
       }
       setShowNewGameModal(true);
     });
 
-    socket.on("joined-room", () => {
+    socket.on("joined-room", ({ roomId }) => {
+      socket.roomId = roomId;
       setIsConnecting(false);
     });
 
@@ -72,6 +76,7 @@ export default function Dialog({ roomId, username, winner }) {
     () => {
       socket.off("welcome");
       socket.off("joined-room");
+      socket.off("username-selected");
       socket.off("invite-friend");
       socket.off("game-ready");
       socket.off("game-over");
@@ -117,14 +122,11 @@ export default function Dialog({ roomId, username, winner }) {
         onClickNewGame={onClickNewGame}
         isOpen={showNewGameModal}
       />
-      <InviteModal 
-        roomId={roomId}
+      <InviteModal
         isOpen={showInviteModal}
       />
       <WinnerModal 
         winner={winner}
-        roomId={roomId}
-        username={username}
         isOpen={showWinnerModal}
       />
     </>

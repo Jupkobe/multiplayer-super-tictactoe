@@ -1,7 +1,8 @@
 import { checkDiagonal, checkVertical, checkHorizontal, checkDraw } from "./checkFuncs";
+import { socket } from "../socket";
 
 
-export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPlayable, lastPlay }) {
+export default function GameBoard({ boardId, onPlay, game, winner, isPlayable, lastPlay }) {
     const board = game;
     
     function handleClick(e, index) {
@@ -9,7 +10,7 @@ export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPla
         if (!isPlayable) return;
         else if (board[index] !== null) return;
         
-        board[index] = symbol;
+        board[index] = socket.symbol;
         
         const result = {
             boardId,
@@ -22,7 +23,7 @@ export default function GameBoard({ boardId, onPlay, symbol, game, winner, isPla
 
     function isOver() {
         if (checkHorizontal(board) || checkVertical(board) || checkDiagonal(board)) {
-            return symbol;
+            return socket.symbol;
         }
         else if (checkDraw(board)) {
             return "D";

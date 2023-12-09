@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { socket } from "../../socket";
 
-export default function WinnerModal({ winner, roomId, username, isOpen }) {
+export default function WinnerModal({ winner, isOpen }) {
   const [resetCount, setResetCount] = useState(0);
   const [clicked, setClicked] = useState(false);
   const modal = useRef(null);
@@ -29,7 +29,7 @@ export default function WinnerModal({ winner, roomId, username, isOpen }) {
 
   function onReset() {
     setClicked(true);
-    socket.emit("reset-request", roomId, username);
+    socket.emit("reset-request", socket.roomId);
   };  
 
   return (      
