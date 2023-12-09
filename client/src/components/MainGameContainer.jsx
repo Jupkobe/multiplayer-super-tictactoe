@@ -93,9 +93,9 @@ export default function MainGameContainer() {
     <>
       <main className='flex flex-col items-center justify-center w-full min-h-screen p-3'>
         <div className='flex flex-col items-center mb-4'>
-          <h2 className='text-5xl font-bold text-[#0b0d40]'>{turn && `(${turn.symbol}) ${turn.username}'s Turn`}</h2>
+          <h2 className='text-2xl sm:text-3xl lg:text-5xl text-center font-bold text-[#0b0d40]'>{turn && `(${turn.symbol}) ${turn.username}'s Turn`}</h2>
         </div>
-        <section className='w-full sm:w-[37.75rem] sm:h-[37.75rem] p-1 sm:p-3 sm:justify-center sm:items-center bg-[#5068AB] rounded-md'>
+        <section className='aspect-square w-full sm:w-4/5 md:w-1/2 lg:w-1/2 lg:max-w-xl p-1 sm:p-3 sm:justify-center sm:items-center bg-[#5068AB] rounded-md'>
           <div className='grid grid-cols-3 gap-1 sm:gap-2 aspect-square'>
             {gameBoardElems}
           </div>

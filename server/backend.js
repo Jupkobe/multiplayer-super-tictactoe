@@ -11,10 +11,10 @@ const io = require('socket.io')(server, {
     origin: '*',
     methods: ['GET', 'POST']
   }, 
-//   connectionStateRecovery: {
-//     maxDisconnectionDuration: 5000,
-//     skipMiddlewares: true,
-//   }
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 5000,
+    skipMiddlewares: true,
+  }
 });
 
 const PORT = process.env.PORT || 3000;
@@ -35,7 +35,6 @@ io.on("connection", (socket) => {
         if (usernameList.includes(username)) {
             socket.emit("error", "Username already exists!");
         } else {
-            socket.username = username;
             players[socket.id] = {id: socket.id, roomId: null, symbol: null, username};
             socket.emit("username-selected", username);
         }

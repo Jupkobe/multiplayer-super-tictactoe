@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { socket } from "../socket";
 import { useLocation, useNavigate } from "react-router-dom";
 import UsernameModal from './modals/UsernameModal';
@@ -20,31 +20,31 @@ export default function Dialog({ winner }) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState(null);
   const navigateTo = useNavigate();
-  let query = useQuery();
+  let query = useQuery();  
+  const modal = useRef(null);
 
   useEffect(() => {
-    socket.on("welcome", () => {
-      setShowUsernameModal(true);
-      setShowInviteModal(false);
-      setShowNewGameModal(false);
-      setShowWinnerModal(false);
-    });
-
+    socket.on("connect", () => {
+      modal.current.showModal();
+    })
+    
     socket.on("username-selected", (usernameFromServer) => {
       socket.username = usernameFromServer;
       setShowUsernameModal(false);
       setIsConnecting(false);
+      setShowNewGameModal(true);
 
       if (query.get("roomId")) {
         socket.emit("join-room", query.get("roomId"));
         navigateTo("/");
       }
-      setShowNewGameModal(true);
     });
 
     socket.on("joined-room", ({ roomId }) => {
       socket.roomId = roomId;
+      
       setIsConnecting(false);
+      setShowInviteModal(true);
     });
 
     socket.on("invite-friend", () => {
@@ -53,6 +53,7 @@ export default function Dialog({ winner }) {
     });
 
     socket.on("game-ready", () => {
+      modal.current.close();
       setIsConnecting(false);
       setShowInviteModal(false);
       setShowNewGameModal(false);
@@ -65,6 +66,7 @@ export default function Dialog({ winner }) {
       setShowNewGameModal(false);
       setShowUsernameModal(false);
       setShowWinnerModal(true);
+      modal.current.showModal();
     });    
 
     // ERROR HANDLING
@@ -74,7 +76,6 @@ export default function Dialog({ winner }) {
     });
 
     () => {
-      socket.off("welcome");
       socket.off("joined-room");
       socket.off("username-selected");
       socket.off("invite-friend");
@@ -109,26 +110,23 @@ export default function Dialog({ winner }) {
 
   return (
     <>
-      <UsernameModal 
-        onUsernameSelect={onUsernameSelect}
-        error={error}
-        isConnecting={isConnecting}
-        isOpen={showUsernameModal}
-      />
-      <NewGameModal
-        error={error}
-        isConnecting={isConnecting}
-        onClickJoin={onClickJoin}
-        onClickNewGame={onClickNewGame}
-        isOpen={showNewGameModal}
-      />
-      <InviteModal
-        isOpen={showInviteModal}
-      />
-      <WinnerModal 
-        winner={winner}
-        isOpen={showWinnerModal}
-      />
+      <dialog onKeyDown={(e) => {if (e.key === 'Escape') e.preventDefault()}} className='rounded backdrop:bg-black backdrop:opacity-60' ref={modal}>
+        {showUsernameModal && <UsernameModal 
+          onUsernameSelect={onUsernameSelect}
+          error={error}
+          isConnecting={isConnecting}
+        />}
+        {showNewGameModal && <NewGameModal
+          error={error}
+          isConnecting={isConnecting}
+          onClickJoin={onClickJoin}
+          onClickNewGame={onClickNewGame}
+        />}
+        {showInviteModal && <InviteModal/>}
+        {showWinnerModal && <WinnerModal 
+          winner={winner}
+        />}
+      </dialog>
     </>
   )
 }
