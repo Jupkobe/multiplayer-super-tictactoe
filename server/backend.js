@@ -15,14 +15,13 @@ const io = require('socket.io')(server, {
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// app.use(cors());
 
 server.listen(PORT, () => {
     console.log("SERVER IS UP")
 });
 
 // RASTGELE MODU
-// DISCONNECTION
 
 const games = {}
 const players = {}
@@ -100,39 +99,6 @@ io.on("connection", (socket) => {
         }
     });
 
-    // socket.on("join-with-url", async (roomId) => {
-    //     const sockets = await io.in(roomId).fetchSockets();
-
-    //     if (sockets.length === 0) {            
-    //         socket.emit("error", "Room not found!");
-    //     }
-    //     else if (sockets.length === 2) {
-    //         socket.emit("error", "Room is full!");
-    //     }
-    //     else {
-    //         socket.join(roomId);
-    //         players[socket.id].roomId = roomId;
-    //         const player = players[socket.id];
-            
-    //         if (games[roomId].playerX === null) setPlayerX(roomId, player);
-    //         else setPlayerO(roomId, player);
-
-    //         console.log("player", player.symbol);
-    //         console.log("plural p", players[socket.id].symbol);
-
-    //         console.log(`${player.username} joined ${roomId}`);
-
-    //         socket.emit("joined-room", {symbol: player.symbol, roomId});
-
-    //         if (games[roomId].winner) {
-    //             socket.emit("game-over", games[roomId].winner);
-    //         } else {
-    //             io.to(roomId).emit("game-ready");    
-    //             io.to(roomId).emit("next-turn", {turn: games[roomId].playerX, nextPlayFromServer: generateBoardIdArray()});
-    //         }
-    //     }
-    // });
-
     socket.on("disconnect", async () => {
         const player = players[socket.id];
 
@@ -161,8 +127,6 @@ io.on("connection", (socket) => {
         }
 
         delete players[socket.id];
-
-        console.log(players);
     })
 
     // lastPlay = [room, player, boardId, boxId, result]
@@ -202,6 +166,9 @@ io.on("connection", (socket) => {
 
     socket.on("reset-request", (roomId) => {
         if (games[roomId].reset && socket.id !== games[roomId].reset) {
+            const player = players[socket.id];
+            console.log(`${player.username} requested reset in ${roomId} (2/2)`);
+
             io.to(roomId).emit("reset-count", 2);
             const prevX = games[roomId].playerX;
             const prevO = games[roomId].playerO;
@@ -213,7 +180,6 @@ io.on("connection", (socket) => {
             io.to(roomId).emit("reset");
             io.to(roomId).emit("game-ready");
             io.to(roomId).emit("next-turn", {turn: games[roomId].playerX, nextPlayFromServer: generateBoardIdArray()});
-            console.log(games[roomId]);
         }
         else if (!games[roomId].reset) {
             games[roomId].reset = socket.id;

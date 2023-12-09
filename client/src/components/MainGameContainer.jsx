@@ -12,12 +12,13 @@ import GameBoard from './GameBoard';
 //   X, D, D]
 // }
 
-export default function MainGameContainer({ roomId, username }) {
+export default function MainGameContainer({ roomId, username, focused }) {
   const [mainGame, setMainGame] = useState(() => generateEmptyBoardArray());
   const [nextPlayArray, setNextPlayArray] = useState([]);
   const [lastPlay, setLastPlay] = useState([-1, -1]);
   const [symbol, setSymbol] = useState("");
   const [turn, setTurn] = useState(null);
+  let opponentPlayedAudio = new Audio("/src/audio/opponent-played.mp3");
   
   useEffect(() => {
     socket.on("joined-room", ({ symbol }) => {
@@ -36,6 +37,8 @@ export default function MainGameContainer({ roomId, username }) {
       setTurn(turn);
 
       if (username === turn.username) {
+        if (!focused) opponentPlayedAudio.play();
+        
         setNextPlayArray(nextPlayFromServer);
       }
     });

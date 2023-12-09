@@ -11,8 +11,20 @@ export default function App() {
   const [roomId, setRoomId] = useState("");
   const [username, setUsername] = useState("");
   const [winner, setWinner] = useState(null);
+  const [focused, setFocused] = useState(true);
   const navigateTo = useNavigate();
+
   
+  useEffect(() => {
+    window.addEventListener("focus", () => {setFocused(true)});
+    window.addEventListener("blur", () => {setFocused(false)});
+    
+    return () => {
+        window.removeEventListener("focus", () => {setFocused(true)});
+        window.removeEventListener("blur", () => {setFocused(false)});
+    };
+  }, []);
+
   useEffect(() => {
     socket.on("username-selected", (usernameFromServer) => {
       setUsername(usernameFromServer);
@@ -50,7 +62,8 @@ export default function App() {
         username={username}
         winner={winner}
       />
-      <MainGameContainer 
+      <MainGameContainer
+        focused={focused} 
         roomId={roomId}
         username={username}
       />
