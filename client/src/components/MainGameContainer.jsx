@@ -20,8 +20,6 @@ export default function MainGameContainer() {
   let playedAudio = new Audio("/audios/opponent-played.mp3");
   
 
-  console.log("Render")
-
   useEffect(() => {
     socket.on("joined-room", () => {
       setMainGame(generateEmptyBoardArray());
@@ -102,9 +100,6 @@ export default function MainGameContainer() {
             {gameBoardElems}
           </div>
         </section>
-        <button onClick={() => {
-          socket.connect();
-        }} className='w-40'>DENEME</button>
       </main>
     </>
   )
